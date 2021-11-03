@@ -1,0 +1,77 @@
+version: "3.8"
+
+x-loki: &defaultloki
+  image: 1131cf1924b5
+  volumes:
+  - ./:/opt/loki/
+  - ./chunks:/loki/chunks/
+  ports:
+  - "3100"
+  - "7946"
+  - "9095"
+  networks:
+  - loki
+
+services:
+  loki-frontend:
+    <<: *defaultloki
+    command: "-config.file=/opt/loki/loki-config.yaml -target=query-frontend"
+
+  # Read-path nodes.
+  loki-read1:
+    <<: *defaultloki
+    command: "-config.file=/opt/loki/loki-config.yaml -target=read"
+
+  loki-read2:
+    <<: *defaultloki
+    command: "-config.file=/opt/loki/loki-config.yaml -target=read"
+
+  loki-read3:
+    <<: *defaultloki
+    command: "-config.file=/opt/loki/loki-config.yaml -target=read"
+
+  # Write-path nodes.
+  loki-write1:
+    <<: *defaultloki
+    command: "-config.file=/opt/loki/loki-config.yaml -target=write -ingester.lifecycler.ID=write1"
+
+  loki-write2:
+    <<: *defaultloki
+    command: "-config.file=/opt/loki/loki-config.yaml -target=write -ingester.lifecycler.ID=write2"
+
+  loki-write3:
+    <<: *defaultloki
+    command: "-config.file=/opt/loki/loki-config.yaml -target=write -ingester.lifecycler.ID=write3"
+
+  # Dependencies: grafana, promtail and a gateway/loadbalancer.
+  grafana:
+    image: grafana/grafana:8.2.0
+    ports:
+      - "3000:3000"
+    networks:
+      - loki
+
+  # promtail:
+  #   image: grafana/promtail:2.0.0
+  #   volumes:
+  #     - /var/log:/var/log
+  #     - ./:/etc/promtail/
+  #   ports:
+  #     - "9080:9080"
+  #   command: -config.file=/etc/promtail/promtail-gateway.yaml
+  #   networks:
+  #     - loki
+
+  loki-gateway:
+    image: nginx:1.19
+    volumes:
+      - ./nginx-loki-gateway.conf:/etc/nginx/nginx.conf
+    ports:
+      - "80"
+      - "3100"
+    networks:
+      - loki
+
+# Network
+networks:
+  loki:
