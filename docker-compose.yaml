@@ -1,76 +1,54 @@
 version: "3.8"
 
 x-loki: &defaultloki
-  image: 1131cf1924b5
+  image: grafana/loki:2.4.1
   volumes:
   - ./:/opt/loki/
-  - ./chunks:/loki/chunks/
-  ports:
-  - "3100"
-  - "7946"
-  - "9095"
   networks:
   - loki
 
 services:
-  loki-frontend:
-    <<: *defaultloki
-    command: "-config.file=/opt/loki/loki-config.yaml -target=query-frontend"
-
   # Read-path nodes.
   loki-read1:
     <<: *defaultloki
     command: "-config.file=/opt/loki/loki-config.yaml -target=read"
+    ports:
+    - 3100:3100
 
   loki-read2:
     <<: *defaultloki
     command: "-config.file=/opt/loki/loki-config.yaml -target=read"
+    ports:
+    - 3101:3100
 
   loki-read3:
     <<: *defaultloki
     command: "-config.file=/opt/loki/loki-config.yaml -target=read"
+    ports:
+    - 3102:3100
 
   # Write-path nodes.
   loki-write1:
     <<: *defaultloki
     command: "-config.file=/opt/loki/loki-config.yaml -target=write -ingester.lifecycler.ID=write1"
+    ports:
+    - 3200:3100
 
   loki-write2:
     <<: *defaultloki
     command: "-config.file=/opt/loki/loki-config.yaml -target=write -ingester.lifecycler.ID=write2"
+    ports:
+    - 3201:3100
 
   loki-write3:
     <<: *defaultloki
     command: "-config.file=/opt/loki/loki-config.yaml -target=write -ingester.lifecycler.ID=write3"
-
-  # Dependencies: grafana, promtail and a gateway/loadbalancer.
-  grafana:
-    image: grafana/grafana:8.2.0
     ports:
-      - "3000:3000"
-    networks:
-      - loki
+    - 3202:3100
 
-  # promtail:
-  #   image: grafana/promtail:2.0.0
-  #   volumes:
-  #     - /var/log:/var/log
-  #     - ./:/etc/promtail/
-  #   ports:
-  #     - "9080:9080"
-  #   command: -config.file=/etc/promtail/promtail-gateway.yaml
-  #   networks:
-  #     - loki
-
-  loki-gateway:
-    image: nginx:1.19
-    volumes:
-      - ./nginx-loki-gateway.conf:/etc/nginx/nginx.conf
-    ports:
-      - "80"
-      - "3100"
-    networks:
-      - loki
+  # loki-frontend:
+  #   <<: *defaultloki
+  #   command: "-config.file=/opt/loki/loki-config.yaml -target=query-frontend"
 
 # Network
 networks:
