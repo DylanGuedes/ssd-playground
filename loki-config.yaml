@@ -4,8 +4,7 @@ server:
 
 memberlist:
   join_members:
-  - loki-write1
-
+  - ring
   dead_node_reclaim_time: 30s
   gossip_to_dead_nodes_time: 15s
   left_ingesters_timeout: 30s
@@ -44,9 +43,9 @@ query_range:
 
 storage_config:
   boltdb_shipper:
-    cache_ttl: 24h         # Can be increased for faster performance over longer query periods, uses more disk space
+    cache_ttl: 24h
     shared_store: filesystem
-    
+
 common:
   path_prefix: /tmp/loki
   ring:
