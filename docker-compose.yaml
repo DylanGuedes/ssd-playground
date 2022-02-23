@@ -1,24 +1,22 @@
 version: "3.8"
 
 x-loki: &defaultloki
-  image: grafana/loki:main-49ffe52-amd64
+  image: dylanguedes/loki:add-ring-to-index-gateway-20986cc-WIP
   volumes:
   - ./:/opt/loki/
   networks:
   - loki
 
 services:
-  ring:
+  loki1:
     <<: *defaultloki
-    image: grafana/loki:main-49ffe52-amd64
-    command: "-config.file=/opt/loki/loki-config.yaml -target=distributor"
+    command: "-config.file=/opt/loki/loki-config.yaml -target=index-gateway"
     ports:
       - 3100:3100
 
-  distributor:
+  loki2:
     <<: *defaultloki
-    image: grafana/loki:main-49ffe52-amd64
-    command: "-config.file=/opt/loki/loki-config.yaml -target=distributor"
+    command: "-config.file=/opt/loki/loki-config.yaml -target=index-gateway"
     ports:
       - 3101:3100
 
