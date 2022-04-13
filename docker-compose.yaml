@@ -1,7 +1,7 @@
 version: "3.8"
 
 x-loki: &defaultloki
-  image: dylanguedes/loki:add-ring-to-index-gateway-20986cc-WIP
+  image: dylanguedes/loki:HEAD-1dc0d97-WIP
   volumes:
   - ./:/opt/loki/
   networks:
@@ -19,6 +19,12 @@ services:
     command: "-config.file=/opt/loki/loki-config.yaml -target=index-gateway"
     ports:
       - 3101:3100
+
+  loki3:
+    <<: *defaultloki
+    command: "-config.file=/opt/loki/loki-config.yaml -target=querier"
+    ports:
+      - 3102:3100
 
 # Network
 networks:

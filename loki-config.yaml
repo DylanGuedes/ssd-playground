@@ -21,7 +21,7 @@ schema_config:
       period: 24h
 
 index_gateway:
-  use_index_gateway_ring: true
+  mode: ring
 
 common:
   path_prefix: /tmp/loki
