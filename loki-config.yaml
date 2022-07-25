@@ -1,10 +1,12 @@
+auth_enabled: false
+
 server:
   log_level: debug
   http_listen_port: 3100
 
 memberlist:
   join_members:
-  - loki1
+  - write-1
   dead_node_reclaim_time: 30s
   gossip_to_dead_nodes_time: 15s
   left_ingesters_timeout: 30s
@@ -12,7 +14,7 @@ memberlist:
 
 schema_config:
   configs:
-  - from: 2020-08-01
+  - from: 2020-10-24
     store: boltdb-shipper
     object_store: filesystem
     schema: v11
@@ -25,6 +27,10 @@ index_gateway:
 
 common:
   path_prefix: /tmp/loki
+  storage:
+    filesystem:
+      chunks_directory: /tmp/loki/chunks
+      rules_directory: /tmp/loki/rules
   ring:
     kvstore:
       store: memberlist

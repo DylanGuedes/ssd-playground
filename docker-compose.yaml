@@ -1,30 +1,48 @@
 version: "3.8"
 
 x-loki: &defaultloki
-  image: dylanguedes/loki:HEAD-1dc0d97-WIP
+  image: grafana/loki:main-d38c208
   volumes:
   - ./:/opt/loki/
   networks:
   - loki
 
 services:
-  loki1:
+  write-1:
     <<: *defaultloki
-    command: "-config.file=/opt/loki/loki-config.yaml -target=index-gateway"
+    command: "-config.file=/opt/loki/loki-config.yaml -target=write -log.level=debug"
     ports:
       - 3100:3100
 
-  loki2:
+  write-2:
     <<: *defaultloki
-    command: "-config.file=/opt/loki/loki-config.yaml -target=index-gateway"
+    command: "-config.file=/opt/loki/loki-config.yaml -target=write -log.level=debug"
     ports:
       - 3101:3100
 
-  loki3:
+  write-3:
     <<: *defaultloki
-    command: "-config.file=/opt/loki/loki-config.yaml -target=querier"
+    command: "-config.file=/opt/loki/loki-config.yaml -target=write -log.level=debug"
     ports:
       - 3102:3100
+
+  read-1:
+    <<: *defaultloki
+    command: "-config.file=/opt/loki/loki-config.yaml -target=read -log.level=debug"
+    ports:
+      - 3103:3100
+
+  read-2:
+    <<: *defaultloki
+    command: "-config.file=/opt/loki/loki-config.yaml -target=read -log.level=debug"
+    ports:
+      - 3104:3100
+
+  read-3:
+    <<: *defaultloki
+    command: "-config.file=/opt/loki/loki-config.yaml -target=read -log.level=debug"
+    ports:
+      - 3105:3100
 
 # Network
 networks:
