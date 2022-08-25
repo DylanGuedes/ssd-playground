@@ -1,27 +1,20 @@
+auth_enabled: false
+
 server:
   log_level: debug
   http_listen_port: 3100
 
 memberlist:
   join_members:
-  - loki-write1
-
+  - write-1
   dead_node_reclaim_time: 30s
   gossip_to_dead_nodes_time: 15s
   left_ingesters_timeout: 30s
   bind_port: 7946
 
-ingester:
-  wal:
-    enabled: false
-  lifecycler:
-    join_after: 60s
-    observe_period: 5s
-    final_sleep: 0s
-
 schema_config:
   configs:
-  - from: 2020-08-01
+  - from: 2020-10-24
     store: boltdb-shipper
     object_store: filesystem
     schema: v11
@@ -29,26 +22,17 @@ schema_config:
       prefix: index_
       period: 24h
 
-ruler:
-  storage:
-    type: local
-    local:
-      directory: /tmp/loki/rules
+index_gateway:
+  mode: ring
 
-limits_config:
-  unordered_writes: true
-
-query_range:
-  split_queries_by_interval: 10s
-  cache_results: false
-
-storage_config:
-  boltdb_shipper:
-    cache_ttl: 24h         # Can be increased for faster performance over longer query periods, uses more disk space
-    shared_store: filesystem
-    
 common:
   path_prefix: /tmp/loki
+  storage:
+    filesystem:
+      chunks_directory: /tmp/loki/chunks
+      rules_directory: /tmp/loki/rules
   ring:
     kvstore:
       store: memberlist
+  groupcache:
+    enabled: true
