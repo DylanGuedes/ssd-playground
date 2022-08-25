@@ -34,3 +34,5 @@ common:
   ring:
     kvstore:
       store: memberlist
+  groupcache:
+    enabled: true
