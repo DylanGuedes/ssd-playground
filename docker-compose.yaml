@@ -1,7 +1,7 @@
 version: "3.8"
 
 x-loki: &defaultloki
-  image: grafana/loki:2.4.1
+  image: grafana/loki:prepare-shutdown-d125c4f
   volumes:
   - ./:/opt/loki/
   networks:
